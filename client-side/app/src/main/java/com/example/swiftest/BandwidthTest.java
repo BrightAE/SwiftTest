@@ -424,7 +424,6 @@ public class BandwidthTest {
         Log.d("bandwidth_Mbps", bandwidth_Mbps);
         Log.d("duration_s", duration_s);
         Log.d("traffic_MB", traffic_MB);
-        Log.d("speedSample", String.valueOf(speedSample));
     }
 
     String getNetworkType() {
