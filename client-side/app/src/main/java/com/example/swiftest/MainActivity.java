@@ -1,4 +1,4 @@
-package com.example.bts_app;
+package com.example.swiftest;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,17 +6,11 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
     BandwidthTest bandwidthTest = new BandwidthTest(this);

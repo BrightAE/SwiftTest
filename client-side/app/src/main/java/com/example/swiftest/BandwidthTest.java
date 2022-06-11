@@ -1,4 +1,4 @@
-package com.example.bts_app;
+package com.example.swiftest;
 
 import android.Manifest;
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.util.Pair;
 
 import com.orhanobut.logger.Logger;
 
@@ -24,11 +23,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
@@ -37,7 +34,8 @@ public class BandwidthTest {
     Context context;
 
     final static private int InitTimeout = 500;
-    final static private int PingTimeout = 500;
+    final static private int PingTimeout = 5000;
+    final static private int MinFinishedNum = 5;
 
     final static private int ThreadNum = 4;
     final static private int ServerCapability = 100;            // 100Mbps per server
@@ -75,9 +73,12 @@ public class BandwidthTest {
     static class PingThread extends Thread implements Comparable<PingThread> {
         long rtt;
         String ip;
+        boolean finished;
 
         PingThread(String ip) {
             this.ip = ip;
+            this.finished = false;
+            this.rtt = PingTimeout * 2;
         }
 
         public void run() {
@@ -92,9 +93,9 @@ public class BandwidthTest {
                 connection.getResponseCode();
                 rtt = System.currentTimeMillis() - nowTime;
                 connection.disconnect();
+                finished = true;
             } catch (IOException e) {
-                rtt = 2000;
-                e.printStackTrace();
+                finished = true;
             }
         }
 
@@ -142,15 +143,25 @@ public class BandwidthTest {
                         pingThreads.add(new PingThread(ip));
                     for (PingThread pingThread : pingThreads)
                         pingThread.start();
-                    for (PingThread pingThread : pingThreads)
-                        pingThread.join();
+
+                    long start_time = System.currentTimeMillis();
+                    while (true) {
+                        int finish_num = 0;
+                        for (PingThread pingThread : pingThreads)
+                            if (pingThread.finished)
+                                finish_num++;
+                        if (finish_num == server_num)
+                            break;
+                        if (System.currentTimeMillis() - start_time > InitTimeout && finish_num > MinFinishedNum)
+                            break;
+                    }
 
                     Collections.sort(pingThreads);
 
                     for (PingThread pingThread : pingThreads)
                         this.ipList.add(pingThread.ip);
                 }
-            } catch (IOException | JSONException | InterruptedException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -262,6 +273,7 @@ public class BandwidthTest {
         ArrayList<DownloadThread> downloadThread;
         ArrayList<String> serverIP;
         int warmupNum;
+        int stepNum;
         int serverNum;
         int runningServerNum;
 
@@ -278,16 +290,20 @@ public class BandwidthTest {
 
             switch (networkType) {
                 case "5G":
-                    this.warmupNum = 3;
+                    this.warmupNum = 5;
+                    this.stepNum = 3;
                     break;
                 case "WiFi":
                     this.warmupNum = 2;
+                    this.stepNum = 2;
                     break;
                 case "4G":
-                    this.warmupNum = 1;
+                    this.warmupNum = 2;
+                    this.stepNum = 1;
                     break;
                 default:
                     this.warmupNum = 1;
+                    this.stepNum = 1;
                     break;
             }
         }
@@ -304,12 +320,14 @@ public class BandwidthTest {
         }
 
         public void add() {
-            if (runningServerNum >= serverNum)
-                return;
-            for (int j = 0; j < ThreadNum; ++j)
-                downloadThread.get(runningServerNum * ThreadNum + j).start();
-            Log.d("Server added:", serverIP.get(runningServerNum));
-            runningServerNum++;
+            for (int i = 0; i < stepNum; ++i) {
+                if (runningServerNum >= serverNum)
+                    return;
+                for (int j = 0; j < ThreadNum; ++j)
+                    downloadThread.get(runningServerNum * ThreadNum + j).start();
+                Log.d("Server added:", serverIP.get(runningServerNum));
+                runningServerNum++;
+            }
         }
 
         public void stop() throws InterruptedException {
@@ -406,7 +424,7 @@ public class BandwidthTest {
         Log.d("bandwidth_Mbps", bandwidth_Mbps);
         Log.d("duration_s", duration_s);
         Log.d("traffic_MB", traffic_MB);
-        Logger.d(speedSample);
+        Log.d("speedSample", String.valueOf(speedSample));
     }
 
     String getNetworkType() {
