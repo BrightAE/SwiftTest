@@ -6,15 +6,59 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class MainActivity extends AppCompatActivity {
     BandwidthTest bandwidthTest = new BandwidthTest(this);
     boolean isTesting = false;
+
+    //for test
+    class myTestThread extends Thread {
+//        ArrayList<Double> speedSample;
+        boolean finish;
+        int current_index;
+        ArrayList<Double> speedSample;
+
+        myTestThread(ArrayList<Double> speedSample) {
+            this.finish = false;
+            this.current_index = 0;
+            this.speedSample = speedSample;
+        }
+
+        public void run() {
+            while (!finish) {
+                try {
+                    sleep(50);
+                    current_index ++;
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = speedSample.size() - 1; i >= 0; i--) {
+                        double num = speedSample.get(i);
+                        sb.append(num);
+                        sb.append(",");
+                    }
+                    String result = sb.toString();
+
+                    Log.d(Integer.toString(current_index), result);
+                    if(!isTesting) break;
+                } catch (InterruptedException e) {
+                    Log.d("test_thread", "bug");
+                }
+
+                //draw on windows
+            }
+        }
+
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
                     String bandwidth = "0";
                     String duration = "0";
                     String traffic = "0";
-                    // String network = "";
                     try {
                         bandwidthTest.SpeedTest();
                         bandwidth = bandwidthTest.bandwidth_Mbps;
@@ -72,6 +115,11 @@ public class MainActivity extends AppCompatActivity {
                         // network_text.setText(finalNetwork);
                     });
                 }).start();
+
+                myTestThread mtt = new myTestThread(bandwidthTest.speedSample);
+                mtt.start();
+                //for test
+
             }
         });
     }

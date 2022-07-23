@@ -59,6 +59,7 @@ public class BandwidthTest {
     public String duration_s = "0";
     public String traffic_MB = "0";
     public String networkType;
+    public ArrayList<Double> speedSample = new ArrayList<>();
 
     boolean stop = false;
 
@@ -359,7 +360,7 @@ public class BandwidthTest {
 
         DownloadThreadMonitor downloadThreadMonitor = new DownloadThreadMonitor(initThread.ipList, networkType);
 
-        ArrayList<Double> speedSample = new ArrayList<>();
+
         SimpleChecker checker = new SimpleChecker(speedSample);
 
         long startTime = System.currentTimeMillis();
