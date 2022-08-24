@@ -6,24 +6,40 @@
     android:layout_height="match_parent"
     tools:context="com.example.swiftest.MainActivity">
 
-
     <LinearLayout
-        android:id="@+id/bandwidth_layout"
-        android:layout_width="320dp"
+        android:id="@+id/my_canvas"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.358">
+        app:layout_constraintVertical_bias="0">
+
+    <com.example.swiftest.MyView
+        android:id="@+id/my_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bandwidth_layout"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.65">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Test result: "
             android:textColor="#000000"
-            android:textSize="25dp" />
+            android:textSize="24dp" />
 
         <TextView
             android:layout_width="0dp"
@@ -36,12 +52,12 @@
             android:layout_height="wrap_content"
             android:text="0.00  Mbps"
             android:textColor="#000000"
-            android:textSize="25dp" />
+            android:textSize="24dp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/duration_layout"
-        android:layout_width="320dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -52,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Test duration: "
-            android:textSize="25dp"
+            android:textSize="24dp"
             android:textColor="#000000" />
 
         <TextView
@@ -64,14 +80,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0.00  s"
-            android:textSize="25dp"
+            android:textSize="24dp"
             android:textColor="#000000"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/traffic_layout"
-        android:layout_width="320dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -82,7 +98,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Data usage: "
-            android:textSize="25dp"
+            android:textSize="24dp"
             android:textColor="#000000"/>
         <TextView
             android:layout_width="0dp"
@@ -93,25 +109,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0.00  MB"
-            android:textSize="25dp"
+            android:textSize="24dp"
             android:textColor="#000000"/>
 
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/network_layout"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/traffic_layout" />
 
     <Button
         android:id="@+id/start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="50dp"
         android:text="@string/start"
         android:textColor="#ffffff"
         android:textSize="35dp"
@@ -119,5 +126,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/traffic_layout" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

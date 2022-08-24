@@ -43,8 +43,8 @@ public class BandwidthTest {
     final static private int TestTimeout = 2000;                // Maximum test duration
     final static private int MaxTrafficUse = 200;               // Maximum traffic limit
 
-    final static private int SamplingInterval = 10;             // Time interval for Sampling
-    final static private int SamplingWindow = 50;               // Sampling overlap
+    final static private int SamplingInterval = 20;             // Time interval for Sampling
+    final static private int SamplingWindow = 100;               // Sampling overlap
 
     final static private int CheckerSleep = 50;                 // Time interval between checks
     final static private int CheckerWindowSize = 10;            // SimpleChecker window size

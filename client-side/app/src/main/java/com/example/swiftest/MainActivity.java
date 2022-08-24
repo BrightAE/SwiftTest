@@ -3,10 +3,17 @@ package com.example.swiftest;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -15,6 +22,7 @@ import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
 
 public class MainActivity extends AppCompatActivity {
     BandwidthTest bandwidthTest = new BandwidthTest(this);
@@ -26,11 +34,13 @@ public class MainActivity extends AppCompatActivity {
         boolean finish;
         int current_index;
         ArrayList<Double> speedSample;
+        MyView myView;
 
-        myTestThread(ArrayList<Double> speedSample) {
+        myTestThread(ArrayList<Double> speedSample, MyView myView) {
             this.finish = false;
             this.current_index = 0;
             this.speedSample = speedSample;
+            this.myView = myView;
         }
 
         public void run() {
@@ -46,7 +56,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     String result = sb.toString();
 
-                    Log.d(Integer.toString(current_index), result);
+//                    Log.d("!!!!!!!!!!!!!!!!! size:", Integer.toString(this.speedSample.size()));
+                    this.myView.setSpeedSamples(speedSample);
+                    this.myView.invalidate();
                     if(!isTesting) break;
                 } catch (InterruptedException e) {
                     Log.d("test_thread", "bug");
@@ -58,11 +70,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // setContentView(new MyView(this));
         setContentView(R.layout.activity_main);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -74,8 +85,9 @@ public class MainActivity extends AppCompatActivity {
         TextView bandwidth_text = findViewById(R.id.bandwidth);
         TextView duration_text = findViewById(R.id.duration);
         TextView traffic_text = findViewById(R.id.traffic);
-//        TextView network_text = findViewById(R.id.network);
         Button button = findViewById(R.id.start);
+        MyView myView = findViewById(R.id.my_view);
+
         button.setOnClickListener(view -> {
             if (isTesting) {
                 isTesting = false;
@@ -83,11 +95,16 @@ public class MainActivity extends AppCompatActivity {
                 bandwidthTest.stop();
             } else {
                 isTesting = true;
+                //清空
+                bandwidthTest.speedSample.clear();
+
                 button.setText(R.string.stop);
                 bandwidth_text.setText(R.string.testing);
                 duration_text.setText(R.string.testing);
                 traffic_text.setText(R.string.testing);
-                // network_text.setText(R.string.testing);
+                myTestThread mtt = new myTestThread(bandwidthTest.speedSample, myView);
+                mtt.start();
+
                 new Thread(() -> {
                     String bandwidth = "0";
                     String duration = "0";
@@ -115,9 +132,6 @@ public class MainActivity extends AppCompatActivity {
                         // network_text.setText(finalNetwork);
                     });
                 }).start();
-
-                myTestThread mtt = new myTestThread(bandwidthTest.speedSample);
-                mtt.start();
                 //for test
 
             }
